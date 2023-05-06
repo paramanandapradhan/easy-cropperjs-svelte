@@ -6,6 +6,10 @@ Use cropper js in svelte through CDN cropperjs library.
 npm i @cloudparker/easy-cropperjs-svelte --save-dev
 ```
 
+# Screenshot
+
+<img src="https://raw.githubusercontent.com/paramanandapradhan/easy-cropperjs-svelte/main/static/screenshot.webp" width="300" alt="Picture">
+
 # Usage
 ```ts
 <script lang="ts">
