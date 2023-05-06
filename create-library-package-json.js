@@ -6,7 +6,7 @@ let publicFolder = './public';
 
 let packageJsonKeys = ['name', 'version', 'author', 'license', 'keywords', 'description', 'exports', 'files', 'type', 'main', 'module', 'svelte', 'types', 'repository', 'homepage',]
 let dependencies = [];
-let devDependencies = ['@cloudparker/easy-window-watcher'];
+let devDependencies = ['@cloudparker/easy-window-watcher', "@sveltejs/kit", "esm-env"];
 let peerDependencies = []
 
 function main() {
@@ -20,7 +20,7 @@ function main() {
     }
 
     if (dependencies && dependencies.length) {
-        esult.dependencies[key] = {}
+        result.dependencies = {}
         dependencies.forEach((key) => {
             if (json.dependencies && json.dependencies[key]) {
                 result.dependencies[key] = json.dependencies[key];
@@ -29,7 +29,7 @@ function main() {
     }
 
     if (devDependencies && devDependencies.length) {
-        esult.devDependencies[key] = {}
+        result.devDependencies = {}
         devDependencies.forEach((key) => {
             if (json.devDependencies && json.devDependencies[key]) {
                 result.devDependencies[key] = json.devDependencies[key];
@@ -38,7 +38,7 @@ function main() {
     }
 
     if (peerDependencies && peerDependencies.length) {
-        esult.peerDependencies[key] = {}
+        result.peerDependencies = {}
         peerDependencies.forEach((key) => {
             if (json.peerDependencies && json.peerDependencies[key]) {
                 result.peerDependencies[key] = json.peerDependencies[key];
