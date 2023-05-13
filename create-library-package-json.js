@@ -5,9 +5,10 @@ import json from './package.json' assert { type: 'json' };
 let publicFolder = './public';
 
 let packageJsonKeys = ['name', 'version', 'author', 'license', 'keywords', 'description', 'exports', 'files', 'type', 'main', 'module', 'svelte', 'types', 'repository', 'homepage',]
-let dependencies = [];
-let devDependencies = ['@cloudparker/easy-window-watcher', "@sveltejs/kit", "esm-env"];
+let dependencies = ['@cloudparker/easy-window-watcher'];
+let devDependencies = ["@sveltejs/kit",];
 let peerDependencies = []
+
 
 function main() {
     let result = {};
@@ -24,6 +25,10 @@ function main() {
         dependencies.forEach((key) => {
             if (json.dependencies && json.dependencies[key]) {
                 result.dependencies[key] = json.dependencies[key];
+            } else if (json.devDependencies && json.devDependencies[key]) {
+                result.dependencies[key] = json.devDependencies[key];
+            } else if (json.peerDependencies && json.peerDependencies[key]) {
+                result.dependencies[key] = json.peerDependencies[key];
             }
         })
     }
@@ -31,8 +36,12 @@ function main() {
     if (devDependencies && devDependencies.length) {
         result.devDependencies = {}
         devDependencies.forEach((key) => {
-            if (json.devDependencies && json.devDependencies[key]) {
+            if (json.dependencies && json.dependencies[key]) {
+                result.devDependencies[key] = json.dependencies[key];
+            } else if (json.devDependencies && json.devDependencies[key]) {
                 result.devDependencies[key] = json.devDependencies[key];
+            } else if (json.peerDependencies && json.peerDependencies[key]) {
+                result.devDependencies[key] = json.peerDependencies[key];
             }
         })
     }
@@ -40,7 +49,11 @@ function main() {
     if (peerDependencies && peerDependencies.length) {
         result.peerDependencies = {}
         peerDependencies.forEach((key) => {
-            if (json.peerDependencies && json.peerDependencies[key]) {
+            if (json.dependencies && json.dependencies[key]) {
+                result.peerDependencies[key] = json.dependencies[key];
+            } else if (json.devDependencies && json.devDependencies[key]) {
+                result.peerDependencies[key] = json.devDependencies[key];
+            } else if (json.peerDependencies && json.peerDependencies[key]) {
                 result.peerDependencies[key] = json.peerDependencies[key];
             }
         })
@@ -53,5 +66,7 @@ function main() {
     console.log('package.json created.')
 
 }
+
+
 
 main();
