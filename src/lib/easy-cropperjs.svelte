@@ -12,11 +12,16 @@
 	export let width: number;
 	export let image: HTMLImageElement;
 	export let aspectRatio: number = 0;
-	export let cropperUrl: string = 'https://unpkg.com/cropperjs@2.0.0-beta.2/dist/cropper.min.js';
+	export let cropperjsUrl: string = 'https://unpkg.com/cropperjs@2.0.0-beta.2/dist/cropper.min.js';
 
-	let cropper: any;
-	let cropperCanvas: any;
-	let cropperSelection: any;
+	export let cropper: any = null;
+	export let cropperCanvas: any = null;
+	export let cropperSelection: any = null;
+	export let cropperImage: any = null;
+	export let cropperHandle: any = null;
+	export let cropperShade: any = null;
+
+	let cropperRef: HTMLDivElement;
 	let dispatch = createEventDispatcher();
 	let mimetypes = {
 		png: 'image/png',
@@ -65,37 +70,66 @@
 	function init() {
 		if (Cropper) {
 			cropper = new Cropper.default(image, {
-				container: '.cropper-container'
+				container: cropperRef
 			});
 			cropperCanvas = cropper.getCropperCanvas();
 			cropperSelection = cropper.getCropperSelection();
+			cropperImage = cropper.getCropperImage();
+			cropperHandle = cropper.container.querySelector('cropper-handle');
+			cropperShade = cropper.container.querySelector('cropper-shade');
 			updateCropper();
-
 			dispatch('cropper', cropper);
 		}
 	}
 
 	function updateCropper(..._: any) {
-		console.log(cropperCanvas);
-
+		console.log('updateCropper', aspectRatio, cropperCanvas);
+		let size = 0.8;
+		aspectRatio = aspectRatio || 0;
 		if (cropperCanvas) {
 			cropperCanvas.style.width = `${width}px`;
 			cropperCanvas.style.height = `${height}px`;
 		}
-		if (cropperSelection) {
-			if (aspectRatio) {
-				cropperSelection.initialAspectRatio = aspectRatio;
-				cropperSelection.aspectRatio = aspectRatio;
-			}
+		if (cropperImage) {
+			cropperImage.$center('contain');
+		}
 
+		if (cropperSelection) {
+			cropperSelection.initialCoverage = size;
+
+			cropperSelection.initialAspectRatio = aspectRatio || 0;
+			cropperSelection.aspectRatio = aspectRatio || 0;
+			cropperSelection.$render();
+			if (aspectRatio > 1) {
+				cropperSelection.width = width * size;
+			} else if (aspectRatio > 0) {
+				cropperSelection.width = height * 0.8 * aspectRatio;
+				cropperSelection.y = height / 2 - cropperSelection.height / 2;
+			} else {
+				cropperSelection.width = width * 0.8;
+				cropperSelection.height = height * 0.8;
+			}
+		}
+
+		if (cropperSelection) {
 			cropperSelection.$center();
+			cropperSelection.y = height / 2 - cropperSelection.height / 2;
+			cropperSelection.$center();
+			cropperSelection.$render();
+		}
+		if (cropperShade) {
+			cropperShade.y = height / 2 - cropperSelection.height / 2;
+			cropperShade.$render();
+		}
+		if (cropperHandle) {
+			cropperHandle.action = 'none';
 		}
 	}
 
 	onMount(() => {
 		if (BROWSER) {
 			watchWindowValue('Cropper').then((Cropper: any) => {
-				console.log(Cropper);
+				dispatch('load', Cropper);
 				init();
 			});
 		}
@@ -105,12 +139,12 @@
 </script>
 
 <svelte:head>
-	{#if BROWSER && !window['Cropper']}
-		<script src={cropperUrl} type="text/javascript"></script>
+	{#if BROWSER && !window['Cropper'] && cropperjsUrl}
+		<script src={cropperjsUrl} type="text/javascript"></script>
 	{/if}
 </svelte:head>
 
-<div class="cropper-container" style="width:{width}px; height:{height}px;" />
+<div bind:this={cropperRef} class="cropper-container" style="width:{width}px; height:{height}px;" />
 
 <style>
 	.cropper-container {

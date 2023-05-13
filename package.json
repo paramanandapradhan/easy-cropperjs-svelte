@@ -1,6 +1,6 @@
 {
 	"name": "@cloudparker/easy-cropperjs-svelte",
-	"version": "0.0.7",
+	"version": "1.0.0",
 	"description": "Crop image using cropperjs",
 	"license": "MIT",
 	"author": "cloudparker.com",

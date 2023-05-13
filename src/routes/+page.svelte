@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import EasyCropperjs from '$lib';
+	import EasyCropperjs from '../lib/easy-cropperjs.svelte';
 	import { onMount } from 'svelte';
 
 	let image: HTMLImageElement;
