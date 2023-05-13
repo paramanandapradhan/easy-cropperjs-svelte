@@ -83,7 +83,7 @@
 	}
 
 	function updateCropper(..._: any) {
-		console.log('updateCropper', aspectRatio, cropperCanvas);
+		// console.log('updateCropper', aspectRatio, cropperCanvas);
 		let size = 0.8;
 		aspectRatio = aspectRatio || 0;
 		if (cropperCanvas) {
@@ -96,9 +96,10 @@
 
 		if (cropperSelection) {
 			cropperSelection.initialCoverage = size;
-
-			cropperSelection.initialAspectRatio = aspectRatio || 0;
-			cropperSelection.aspectRatio = aspectRatio || 0;
+			if (aspectRatio) {
+				cropperSelection.initialAspectRatio = aspectRatio || 0;
+				cropperSelection.aspectRatio = aspectRatio || 0;
+			}
 			cropperSelection.$render();
 			if (aspectRatio > 1) {
 				cropperSelection.width = width * size;
