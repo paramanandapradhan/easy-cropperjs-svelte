@@ -84,25 +84,22 @@
 
 	function updateCropper(..._: any) {
 		// console.log('updateCropper', aspectRatio, cropperCanvas);
-		let size = 0.8;
+		let selectionSize = 0.8;
 		aspectRatio = aspectRatio || 0;
 		if (cropperCanvas) {
 			cropperCanvas.style.width = `${width}px`;
 			cropperCanvas.style.height = `${height}px`;
 		}
-		if (cropperImage) {
-			cropperImage.$center('contain');
-		}
 
 		if (cropperSelection) {
-			cropperSelection.initialCoverage = size;
+			cropperSelection.initialCoverage = selectionSize;
 			if (aspectRatio) {
 				cropperSelection.initialAspectRatio = aspectRatio || 0;
 				cropperSelection.aspectRatio = aspectRatio || 0;
 			}
 			cropperSelection.$render();
 			if (aspectRatio > 1) {
-				cropperSelection.width = width * size;
+				cropperSelection.width = width * selectionSize;
 			} else if (aspectRatio > 0) {
 				cropperSelection.width = height * 0.8 * aspectRatio;
 				cropperSelection.y = height / 2 - cropperSelection.height / 2;
@@ -124,6 +121,12 @@
 		}
 		if (cropperHandle) {
 			cropperHandle.action = 'none';
+		}
+
+		if (cropperImage) {
+			cropperImage.style.width = `${width}px`;
+			cropperImage.style.height = `${height}px`;
+			cropperImage.$center('contain');
 		}
 	}
 
@@ -148,6 +151,4 @@
 <div bind:this={cropperRef} class="cropper-container" style="width:{width}px; height:{height}px;" />
 
 <style>
-	.cropper-container {
-	}
 </style>

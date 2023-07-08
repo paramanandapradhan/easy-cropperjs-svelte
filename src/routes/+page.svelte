@@ -5,6 +5,7 @@
 
 	let image: HTMLImageElement;
 	let easyCropperjsRef: EasyCropperjs;
+	let clientWidth: number = 0;
 
 	function handleCrop() {
 		easyCropperjsRef.crop({ width: 300, format: 'png', quality: 0.8, blob: false });
@@ -26,14 +27,17 @@
 
 <div>
 	<h1>Easy Cropperjs Svelte Demo</h1>
-	<div>
+	<div bind:clientWidth>
 		<EasyCropperjs
 			bind:this={easyCropperjsRef}
-			width={500}
+			width={clientWidth}
 			height={400}
 			{image}
 			on:result={handleResult}
 		/>
 	</div>
-	<button on:click={handleCrop}>Crop</button>
+	<button on:click={handleCrop} style="margin-top:16px;">Crop</button>
 </div>
+
+<style>
+</style>
