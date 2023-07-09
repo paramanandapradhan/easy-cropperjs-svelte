@@ -6,21 +6,33 @@
 	let image: HTMLImageElement;
 	let easyCropperjsRef: EasyCropperjs;
 	let clientWidth: number = 0;
+	let file: File;
 
-	function handleCrop() {
-		easyCropperjsRef.crop({ width: 300, format: 'png', quality: 0.8, blob: false });
+	async function handleCrop() {
+		let data = await easyCropperjsRef.crop({
+			width: 300,
+			format: 'png',
+			quality: 0.5,
+			blob: true
+		});
+		console.log('crop', data);
 	}
 
-	function handleResult(ev: CustomEvent) {
+	function handleCropResult(ev: CustomEvent) {
 		let base64ImageUrl: string = ev.detail;
-		// User base64ImageUrl
+		// Use base64ImageUrl
 	}
 
-	onMount(() => {
+	async function getFile(url: string) {
+		var fileName = url.split('/').pop() || 'file.png';
+		let blob = await (await fetch(url)).blob();
+		var file = new File([blob], fileName, { type: blob.type });
+		return file;
+	}
+
+	onMount(async () => {
 		if (browser) {
-			image = new Image();
-			image.src = '/wallpaper.jpg';
-			image.alt = 'Picture';
+			file = await getFile('/sky-1.webp');
 		}
 	});
 </script>
@@ -31,9 +43,10 @@
 		<EasyCropperjs
 			bind:this={easyCropperjsRef}
 			width={clientWidth}
-			height={400}
-			{image}
-			on:result={handleResult}
+			height={600}
+			aspectRatio={1}
+			{file}
+			on:crop={handleCropResult}
 		/>
 	</div>
 	<button on:click={handleCrop} style="margin-top:16px;">Crop</button>

@@ -1,6 +1,6 @@
 {
 	"name": "@cloudparker/easy-cropperjs-svelte",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"description": "Crop image using cropperjs",
 	"license": "MIT",
 	"author": "cloudparker.com",
@@ -37,10 +37,8 @@
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
-	"peerDependencies": {
-		"svelte": "^3.54.0"
-	},
 	"devDependencies": {
+		"@cloudparker/easy-script-loader-svelte": "^1.1.0",
 		"@cloudparker/easy-window-watcher": "^0.0.2",
 		"@playwright/test": "^1.35.1",
 		"@sveltejs/adapter-auto": "^2.1.0",
@@ -52,7 +50,7 @@
 		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-svelte": "^2.32.2",
 		"esm-env": "^1.0.0",
-		"prettier": "^2.0.0",
+		"prettier": "^3.0.0",
 		"prettier-plugin-svelte": "^2.10.1",
 		"publint": "^0.1.16",
 		"svelte": "^4.0.5",

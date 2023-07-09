@@ -6,7 +6,7 @@ let publicFolder = './public';
 
 let packageJsonKeys = ['name', 'version', 'author', 'license', 'keywords', 'description', 'exports', 'files', 'type', 'main', 'module', 'svelte', 'types', 'repository', 'homepage',]
 let dependencies = ['@cloudparker/easy-window-watcher'];
-let devDependencies = ["@sveltejs/kit",];
+let devDependencies = ["@sveltejs/kit",'@cloudparker/easy-script-loader-svelte'];
 let peerDependencies = []
 
 
