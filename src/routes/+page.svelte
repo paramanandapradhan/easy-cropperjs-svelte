@@ -3,7 +3,6 @@
 	import EasyCropperjs from '../lib/easy-cropperjs.svelte';
 	import { onMount } from 'svelte';
 
-	let image: HTMLImageElement;
 	let easyCropperjsRef: EasyCropperjs;
 	let clientWidth: number = 0;
 	let file: File;
@@ -12,7 +11,7 @@
 		let data = await easyCropperjsRef.crop({
 			width: 300,
 			format: 'png',
-			quality: 0.5,
+			quality: 0.6,
 			blob: true
 		});
 		console.log('crop', data);

@@ -70,25 +70,32 @@ https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js
 
 	function handleCropperLoad(ev: CustomEvent) {
 		Cropper = ev.detail;
-		initCropper();
 	}
 
 	function initCropper() {
-		if (Cropper && imgRef && base64ImageUrl && !cropper) {
+		// console.log('initCropper', Cropper && imgRef && base64ImageUrl && !cropper, {
+		// 	Cropper,
+		// 	imgRef,
+		// 	base64ImageUrl,
+		// 	cropper
+		// });
+		if (Cropper && imgRef && base64ImageUrl) {
 			cropper = new Cropper(imgRef, {
 				aspectRatio,
-				dragMode: 'move'
+				dragMode: 'move',
+				ready: () => {
+					dispatch('ready', cropper);
+				}
 			});
+
+			// console.log('Cropper created', cropper);
 		}
 	}
 
 	async function prepareBase64Url(..._: any) {
-		if (file) {
+		if (file && !base64ImageUrl) {
 			base64ImageUrl = await fileToDataURL(file);
-		} else {
-			base64ImageUrl = '';
 		}
-		initCropper();
 	}
 
 	async function fileToDataURL(file: File): Promise<string> {
@@ -100,9 +107,14 @@ https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js
 			reader.readAsDataURL(file);
 		});
 	}
+	function handleImageLoad() {
+		initCropper();
+	}
 
 	onMount(() => {
-		initCropper();
+		return () => {
+			cropper && cropper.destroy();
+		};
 	});
 
 	$: prepareBase64Url(file);
@@ -115,8 +127,16 @@ https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js
 	on:load={handleCropperLoad}
 />
 <div style="width:{width}px;height:{height}px;">
-	<!-- svelte-ignore a11y-img-redundant-alt -->
-	<img bind:this={imgRef} src={base64ImageUrl || ''} alt="Image" id="cropper-image" />
+	{#if base64ImageUrl && Cropper}
+		<!-- svelte-ignore a11y-img-redundant-alt -->
+		<img
+			bind:this={imgRef}
+			src={base64ImageUrl}
+			on:load={handleImageLoad}
+			alt="Image"
+			id="cropper-image"
+		/>
+	{/if}
 </div>
 
 <style>
