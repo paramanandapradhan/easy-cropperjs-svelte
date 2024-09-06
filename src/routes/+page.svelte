@@ -44,7 +44,7 @@
 			<EasyCropperjs
 				bind:this={easyCropperjsRef}
 				outputAspectRatio={1}
-				{file}
+				inputImageFile={file}
 				onCrop={handleCropResult}
 			/>
 		{/if}

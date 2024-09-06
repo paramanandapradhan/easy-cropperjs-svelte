@@ -5,7 +5,7 @@
 		outputAspectRatio?: number;
 		cropperjsStyleUrl?: string;
 		cropperjsUrl?: string;
-		file?: File | null;
+		inputImageFile?: File | null;
 		onReady?: (cropper: any) => void;
 		onCrop?: (result: any) => void;
 	};
@@ -14,7 +14,7 @@
 		outputAspectRatio = 0,
 		cropperjsUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js',
 		cropperjsStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css',
-		file,
+		inputImageFile,
 		onReady,
 		onCrop
 	}: PropsType = $props();
@@ -48,11 +48,11 @@
 			if (canvas) {
 				let outmime = mimetypes[outputFormat] || 'image/png';
 				if (outputType === 'file') {
-					let [filename] = getFileNameAndExt(file?.name);
+					let [filename] = getFileNameAndExt(inputImageFile?.name);
 					result = await new Promise((resolve) => {
 						canvas.toBlob(
 							(blobData) => {
-								if (blobData && file?.name) {
+								if (blobData && inputImageFile?.name) {
 									let newFile = new File([blobData], `${filename}.${outputFormat}`, {
 										type: outmime
 									});
@@ -120,8 +120,8 @@
 	}
 
 	async function preppareBase64() {
-		if (file && !base64ImageUrl) {
-			base64ImageUrl = await fileToDataURL(file);
+		if (inputImageFile && !base64ImageUrl) {
+			base64ImageUrl = await fileToDataURL(inputImageFile);
 		}
 	}
 
@@ -132,7 +132,7 @@
 	});
 
 	$effect(() => {
-		if (file && !base64ImageUrl) {
+		if (inputImageFile && !base64ImageUrl) {
 			preppareBase64();
 		}
 	});

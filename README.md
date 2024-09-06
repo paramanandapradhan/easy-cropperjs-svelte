@@ -59,7 +59,7 @@ npm i @cloudparker/easy-cropperjs-svelte --save-dev
 			<EasyCropperjs
 				bind:this={easyCropperjsRef}
 				outputAspectRatio={1}
-				{file}
+				inputImageFile={file}
 				onCrop={handleCropResult}
 			/>
 		{/if}
