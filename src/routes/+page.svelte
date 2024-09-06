@@ -8,10 +8,10 @@
 
 	async function handleCrop() {
 		let data = await easyCropperjsRef?.crop({
-			width: 300,
-			format: 'png',
-			quality: 0.6,
-			blob: true
+			outputWidth: 300,
+			outputFormat: 'webp',
+			outputQuality: 0.6,
+			outputType: 'file'
 		});
 		console.log('crop', data);
 	}
@@ -43,7 +43,7 @@
 		{#if file}
 			<EasyCropperjs
 				bind:this={easyCropperjsRef}
-				aspectRatio={1}
+				outputAspectRatio={1}
 				{file}
 				onCrop={handleCropResult}
 			/>
@@ -51,4 +51,3 @@
 	</div>
 	<button onclick={handleCrop} style="margin-top:16px;">Crop</button>
 </div>
- 

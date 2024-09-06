@@ -2,7 +2,7 @@
 	import EasyScriptLoader from '@cloudparker/easy-script-loader-svelte';
 
 	type PropsType = {
-		aspectRatio?: number;
+		outputAspectRatio?: number;
 		cropperjsStyleUrl?: string;
 		cropperjsUrl?: string;
 		file?: File | null;
@@ -11,7 +11,7 @@
 	};
 
 	let {
-		aspectRatio = 0,
+		outputAspectRatio = 0,
 		cropperjsUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js',
 		cropperjsStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css',
 		file,
@@ -32,34 +32,41 @@
 	};
 
 	export async function crop({
-		width,
-		height,
-		format = 'png',
-		quality = 1,
-		blob = false
+		outputWidth,
+		outputFormat = 'png',
+		outputQuality = 1,
+		outputType
 	}: {
-		width?: number;
-		height?: number;
-		format?: 'png' | 'jpeg' | 'webp';
-		quality?: number;
-		blob?: boolean;
+		outputWidth?: number;
+		outputFormat?: 'png' | 'jpeg' | 'webp';
+		outputQuality?: number;
+		outputType?: 'file' | 'base64';
 	}) {
 		let result: Blob | String | null = null;
 		if (cropper) {
-			let canvas: HTMLCanvasElement = await cropper.getCroppedCanvas({ width, height });
+			let canvas: HTMLCanvasElement = await cropper.getCroppedCanvas({ width: outputWidth });
 			if (canvas) {
-				if (blob) {
+				let outmime = mimetypes[outputFormat] || 'image/png';
+				if (outputType === 'file') {
+					let [filename] = getFileNameAndExt(file?.name);
 					result = await new Promise((resolve) => {
 						canvas.toBlob(
 							(blobData) => {
-								resolve(blobData);
+								if (blobData && file?.name) {
+									let newFile = new File([blobData], `${filename}.${outputFormat}`, {
+										type: outmime
+									});
+									resolve(newFile);
+								} else {
+									resolve(null);
+								}
 							},
-							mimetypes[format] || 'image/png',
-							quality || 1
+							outmime,
+							outputQuality || 1
 						);
 					});
 				} else {
-					result = canvas.toDataURL(mimetypes[format] || 'image/png', quality || 1);
+					result = canvas.toDataURL(outmime, outputQuality || 1);
 				}
 			}
 		}
@@ -69,6 +76,19 @@
 		return result;
 	}
 
+	function getFileNameAndExt(name?: string) {
+		if (name) {
+			const lastDotIndex = name.lastIndexOf('.');
+			if (lastDotIndex === -1) {
+				return [name, ''];
+			}
+			const fileName = name.substring(0, lastDotIndex);
+			const extension = name.substring(lastDotIndex + 1);
+			return [fileName, extension];
+		}
+		return ['', ''];
+	}
+
 	function handleCropperLoad(lib: any) {
 		Cropper = lib;
 	}
@@ -76,7 +96,7 @@
 	function initCropper() {
 		if (Cropper && imgRef && base64ImageUrl) {
 			cropper = new Cropper(imgRef, {
-				aspectRatio,
+				aspectRatio: outputAspectRatio,
 				dragMode: 'move',
 				ready: () => {
 					onReady && onReady(cropper);
@@ -124,7 +144,7 @@
 	scriptName="Cropper"
 	onLoad={handleCropperLoad}
 />
-<div style="width:100%;height:100%;">
+<div class="cropper-container">
 	{#if base64ImageUrl && Cropper}
 		<img
 			bind:this={imgRef}
@@ -137,8 +157,12 @@
 </div>
 
 <style>
-	img {
+	.cropper-container img {
 		display: block;
 		max-width: 100%;
+	}
+	.cropper-container {
+		width: 100%;
+		height: 100%;
 	}
 </style>

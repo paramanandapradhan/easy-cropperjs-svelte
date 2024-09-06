@@ -15,6 +15,7 @@ npm i @cloudparker/easy-cropperjs-svelte --save-dev
  <script lang="ts">
 	import EasyCropperjs from '@cloudparker/easy-cropperjs-svelte';
 
+	
 	let easyCropperjsRef: EasyCropperjs | null = $state(null);
 
 	let clientWidth: number = $state(0);
@@ -22,10 +23,10 @@ npm i @cloudparker/easy-cropperjs-svelte --save-dev
 
 	async function handleCrop() {
 		let data = await easyCropperjsRef?.crop({
-			width: 300,
-			format: 'png',
-			quality: 0.6,
-			blob: true
+			outputWidth: 300,
+			outputFormat: 'webp',
+			outputQuality: 0.6,
+			outputType: 'file'
 		});
 		console.log('crop', data);
 	}
@@ -57,7 +58,7 @@ npm i @cloudparker/easy-cropperjs-svelte --save-dev
 		{#if file}
 			<EasyCropperjs
 				bind:this={easyCropperjsRef}
-				aspectRatio={1}
+				outputAspectRatio={1}
 				{file}
 				onCrop={handleCropResult}
 			/>
@@ -65,5 +66,5 @@ npm i @cloudparker/easy-cropperjs-svelte --save-dev
 	</div>
 	<button onclick={handleCrop} style="margin-top:16px;">Crop</button>
 </div>
- 
+
 ```
