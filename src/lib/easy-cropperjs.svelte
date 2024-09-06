@@ -6,8 +6,6 @@
 		cropperjsStyleUrl?: string;
 		cropperjsUrl?: string;
 		file?: File | null;
-		height?: number;
-		width?: number;
 		onReady?: (cropper: any) => void;
 		onCrop?: (result: any) => void;
 	};
@@ -17,8 +15,6 @@
 		cropperjsUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js',
 		cropperjsStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css',
 		file,
-		height,
-		width,
 		onReady,
 		onCrop
 	}: PropsType = $props();
