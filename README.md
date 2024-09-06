@@ -12,46 +12,58 @@ npm i @cloudparker/easy-cropperjs-svelte --save-dev
 
 # Usage
 ```ts
-<script lang="ts">
-	import { BROWSER } from 'esm-env';
+ <script lang="ts">
 	import EasyCropperjs from '@cloudparker/easy-cropperjs-svelte';
-	import { onMount } from 'svelte';
 
-	let image: HTMLImageElement;
-	let easyCropperjsRef: EasyCropperjs;
+	let easyCropperjsRef: EasyCropperjs | null = $state(null);
 
-	function handleCrop() {
-		easyCropperjsRef.crop({ width: 300, format: 'png', quality: 0.8, blob: false });
+	let clientWidth: number = $state(0);
+	let file: File | null = $state(null);
+
+	async function handleCrop() {
+		let data = await easyCropperjsRef?.crop({
+			width: 300,
+			format: 'png',
+			quality: 0.6,
+			blob: true
+		});
+		console.log('crop', data);
 	}
 
-	function handleResult(ev: CustomEvent) {
+	function handleCropResult(ev: CustomEvent) {
 		let base64ImageUrl: string = ev.detail;
-		// User base64ImageUrl
+		// Use base64ImageUrl
 	}
 
-	onMount(() => {
-		if (BROWSER) {
-			image = new Image();
-			image.src = '/wallpaper.jpg';
-			image.alt = 'Picture';
-		}
+	async function getFile(url: string) {
+		var fileName = url.split('/').pop() || 'file.png';
+		let blob = await (await fetch(url)).blob();
+		var file = new File([blob], fileName, { type: blob.type });
+		return file;
+	}
+
+	async function init() {
+		file = await getFile('/sky-1.webp');
+	}
+
+	$effect(() => {
+		init();
 	});
 </script>
 
 <div>
 	<h1>Easy Cropperjs Svelte Demo</h1>
-	<div>
-		<EasyCropperjs
-			bind:this={easyCropperjsRef}
-			width={500}
-			height={400}
-            aspectRatio={9/16}
-			{image}
-			on:result={handleResult}
-		/>
+	<div style="height: 500px;">
+		{#if file}
+			<EasyCropperjs
+				bind:this={easyCropperjsRef}
+				aspectRatio={1}
+				{file}
+				onCrop={handleCropResult}
+			/>
+		{/if}
 	</div>
-	<button on:click={handleCrop}>Crop</button>
+	<button onclick={handleCrop} style="margin-top:16px;">Crop</button>
 </div>
-
-
+ 
 ```

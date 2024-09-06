@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import EasyCropperjs from '../lib/easy-cropperjs.svelte';
-	import { onMount } from 'svelte';
 
-	let easyCropperjsRef: EasyCropperjs;
-	let clientWidth: number = 0;
-	let file: File;
+	let easyCropperjsRef: EasyCropperjs | null = $state(null);
+
+	let clientWidth: number = $state(0);
+	let file: File | null = $state(null);
 
 	async function handleCrop() {
-		let data = await easyCropperjsRef.crop({
+		let data = await easyCropperjsRef?.crop({
 			width: 300,
 			format: 'png',
 			quality: 0.6,
@@ -29,27 +28,27 @@
 		return file;
 	}
 
-	onMount(async () => {
-		if (browser) {
-			file = await getFile('/sky-1.webp');
-		}
+	async function init() {
+		file = await getFile('/sky-1.webp');
+	}
+
+	$effect(() => {
+		init();
 	});
 </script>
 
 <div>
 	<h1>Easy Cropperjs Svelte Demo</h1>
-	<div bind:clientWidth>
-		<EasyCropperjs
-			bind:this={easyCropperjsRef}
-			width={clientWidth}
-			height={600}
-			aspectRatio={1}
-			{file}
-			on:crop={handleCropResult}
-		/>
+	<div style="height: 500px;">
+		{#if file}
+			<EasyCropperjs
+				bind:this={easyCropperjsRef}
+				aspectRatio={1}
+				{file}
+				onCrop={handleCropResult}
+			/>
+		{/if}
 	</div>
-	<button on:click={handleCrop} style="margin-top:16px;">Crop</button>
+	<button onclick={handleCrop} style="margin-top:16px;">Crop</button>
 </div>
-
-<style>
-</style>
+ 

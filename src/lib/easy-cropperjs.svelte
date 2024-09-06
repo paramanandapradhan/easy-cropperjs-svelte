@@ -1,28 +1,33 @@
-<!-- 
-https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css
-https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js
- -->
 <script lang="ts">
 	import EasyScriptLoader from '@cloudparker/easy-script-loader-svelte';
-	import { createEventDispatcher, onMount } from 'svelte';
 
-	export let cropperjsUrl: string =
-		'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js';
-	export let cropperjsStyleUrl: string =
-		'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css';
+	type PropsType = {
+		aspectRatio?: number;
+		cropperjsStyleUrl?: string;
+		cropperjsUrl?: string;
+		file?: File | null;
+		height?: number;
+		width?: number;
+		onReady?: (cropper: any) => void;
+		onCrop?: (result: any) => void;
+	};
 
-	export let width: number;
-	export let height: number;
-	export let file: File;
-	export let aspectRatio: number = 0;
+	let {
+		aspectRatio = 0,
+		cropperjsUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js',
+		cropperjsStyleUrl = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css',
+		file,
+		height,
+		width,
+		onReady,
+		onCrop
+	}: PropsType = $props();
 
-	let dispatch = createEventDispatcher();
-	let base64ImageUrl: string;
+	let imgRef: HTMLImageElement | null = $state(null);
+	let Cropper: any = $state(null);
+	let cropper: any = $state(null);
 
-	let cropperContainerRef: HTMLDivElement;
-	let imgRef: HTMLImageElement;
-	let Cropper: any;
-	let cropper: any;
+	let base64ImageUrl: string = $state('');
 
 	let mimetypes = {
 		png: 'image/png',
@@ -63,38 +68,24 @@ https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js
 			}
 		}
 		if (result) {
-			dispatch('crop', result);
+			onCrop && onCrop(result);
 		}
 		return result;
 	}
 
-	function handleCropperLoad(ev: CustomEvent) {
-		Cropper = ev.detail;
+	function handleCropperLoad(lib: any) {
+		Cropper = lib;
 	}
 
 	function initCropper() {
-		// console.log('initCropper', Cropper && imgRef && base64ImageUrl && !cropper, {
-		// 	Cropper,
-		// 	imgRef,
-		// 	base64ImageUrl,
-		// 	cropper
-		// });
 		if (Cropper && imgRef && base64ImageUrl) {
 			cropper = new Cropper(imgRef, {
 				aspectRatio,
 				dragMode: 'move',
 				ready: () => {
-					dispatch('ready', cropper);
+					onReady && onReady(cropper);
 				}
 			});
-
-			// console.log('Cropper created', cropper);
-		}
-	}
-
-	async function prepareBase64Url(..._: any) {
-		if (file && !base64ImageUrl) {
-			base64ImageUrl = await fileToDataURL(file);
 		}
 	}
 
@@ -107,33 +98,43 @@ https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js
 			reader.readAsDataURL(file);
 		});
 	}
+
 	function handleImageLoad() {
 		initCropper();
 	}
 
-	onMount(() => {
+	async function preppareBase64() {
+		if (file && !base64ImageUrl) {
+			base64ImageUrl = await fileToDataURL(file);
+		}
+	}
+
+	$effect(() => {
 		return () => {
 			cropper && cropper.destroy();
 		};
 	});
 
-	$: prepareBase64Url(file);
+	$effect(() => {
+		if (file && !base64ImageUrl) {
+			preppareBase64();
+		}
+	});
 </script>
 
 <EasyScriptLoader
 	scriptUrl={cropperjsUrl}
 	styleUrl={cropperjsStyleUrl}
 	scriptName="Cropper"
-	on:load={handleCropperLoad}
+	onLoad={handleCropperLoad}
 />
-<div style="width:{width}px;height:{height}px;">
+<div style="width:100%;height:100%;">
 	{#if base64ImageUrl && Cropper}
-		<!-- svelte-ignore a11y-img-redundant-alt -->
 		<img
 			bind:this={imgRef}
 			src={base64ImageUrl}
-			on:load={handleImageLoad}
-			alt="Image"
+			onload={handleImageLoad}
+			alt="CropableResource"
 			id="cropper-image"
 		/>
 	{/if}
