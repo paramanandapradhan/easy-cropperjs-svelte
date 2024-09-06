@@ -5,8 +5,8 @@ import json from './package.json' assert { type: 'json' };
 let publicFolder = './public';
 
 let packageJsonKeys = ['name', 'version', 'author', 'license', 'keywords', 'description', 'exports', 'files', 'type', 'main', 'module', 'svelte', 'types', 'repository', 'homepage',]
-let dependencies = ['@cloudparker/easy-window-watcher'];
-let devDependencies = ["@sveltejs/kit",'@cloudparker/easy-script-loader-svelte'];
+let dependencies = [];
+let devDependencies = ['@cloudparker/easy-script-loader-svelte'];
 let peerDependencies = []
 
 
